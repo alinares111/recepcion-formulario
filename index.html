@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Recepción de herramientas y elementos de trabajo</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.4; }
+.hidden { display: none; }
+.section { margin-bottom: 20px; }
+label { display: block; margin-top: 10px; }
+input, select { padding: 5px; margin-top: 5px; width: 320px; max-width: 100%; }
+textarea { width: 320px; max-width: 100%; padding: 5px; }
+button { padding: 8px 16px; }
+.error { color: #c00; font-size: 0.9em; }
+</style>
+<script>
+// Muestra u oculta un elemento por id según la condición
+function toggleSection(id, condition) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.className = condition ? 'section' : 'section hidden';
+}
+
+// Cuando cambia el área, mostrar campo extra si selecciona "otros"
+function onAreaChange(value) {
+  toggleSection('otherAreaSection', value === 'otros');
+}
+
+// Variables y funciones para manejar múltiples elementos
+var itemIndex = 0;
+
+// Agrega un nuevo grupo de campos para un elemento recibido
+function addItemGroup() {
+  itemIndex++;
+  var container = document.getElementById('itemsContainer');
+  var div = document.createElement('div');
+  div.className = 'item-group section';
+  div.innerHTML = `
+    <hr style="margin:20px 0; border:none; border-top:1px solid #ccc;">
+    <label>Elemento recibido
+      <select name="elemento_${itemIndex}" onchange="onItemChange(this)" required>
+        <option value="">Seleccione...</option>
+        <option value="notebook">Notebook</option>
+        <option value="cpu">CPU</option>
+        <option value="monitor">Monitor</option>
+        <option value="mouse">Mouse</option>
+        <option value="teclado">Teclado</option>
+        <option value="auriculares">Auriculares</option>
+        <option value="parlantes">Parlantes</option>
+        <option value="webcam">Webcam</option>
+        <option value="aro">Aro de luz</option>
+        <option value="impresora">Impresora</option>
+        <option value="otro">Otro</option>
+      </select>
+    </label>
+    <div class="otherItemSection section hidden">
+      <label>Especifique otro elemento
+        <input type="text" name="otroElemento_${itemIndex}">
+      </label>
+    </div>
+    <div class="itemDetailsSection section hidden">
+      <label>Marca
+        <input type="text" name="marca_${itemIndex}">
+      </label>
+      <label>Modelo
+        <input type="text" name="modelo_${itemIndex}">
+      </label>
+      <label>Número de serie
+        <input type="text" name="numeroSerie_${itemIndex}">
+      </label>
+    </div>
+    <div class="locacionSection section hidden">
+      <label>Locación del elemento recibido
+        <select name="locacion_${itemIndex}" required>
+          <option value="">Seleccione...</option>
+          <option value="remoto">Trabajo remoto</option>
+          <option value="oficina">Oficina</option>
+          <option value="mixto">Trabajo remoto y oficina</option>
+        </select>
+      </label>
+    </div>
+    <button type="button" onclick="removeItemGroup(this)" style="margin-top:10px;">Eliminar este elemento</button>
+  `;
+  container.appendChild(div);
+}
+
+// Elimina un grupo de elementos específico
+function removeItemGroup(button) {
+  var group = button.closest('.item-group');
+  group.remove();
+}
+
+// Maneja el cambio de selección de cada elemento recibido
+function onItemChange(select) {
+  var group = select.closest('.item-group');
+  var other = group.querySelector('.otherItemSection');
+  var details = group.querySelector('.itemDetailsSection');
+  var locacion = group.querySelector('.locacionSection');
+  // Mostrar campo "otro elemento" solo si la opción es "otro"
+  other.className = (select.value === 'otro') ? 'section' : 'section hidden';
+  // Mostrar detalles y locación solo si selecciona algún elemento
+  var show = select.value !== '';
+  details.className = show ? 'section' : 'section hidden';
+  locacion.className = show ? 'section' : 'section hidden';
+}
+
+// Activa o desactiva el botón de envío en función del checkbox de confirmación
+function onConfirmToggle(checkbox) {
+  var submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = !checkbox.checked;
+}
+
+// Añade un elemento inicial cuando se carga la página
+window.onload = function() {
+  addItemGroup();
+};
+</script>
+</head>
+<body>
+<h2>Recepción de herramientas y elementos de trabajo</h2>
+<form id="formRecepcion">
+  <!-- Información personal -->
+  <div class="section">
+    <h3>Información personal</h3>
+    <label>Nombre
+      <input type="text" name="nombre" required>
+    </label>
+    <label>Apellido
+      <input type="text" name="apellido" required>
+    </label>
+    <label>Email corporativo
+      <!-- patrón simple para requerir dominio corporativo ravabursatil.com -->
+      <input type="email" name="email" pattern="^[^@\s]+@ravabursatil\.com$" placeholder="usuario@ravabursatil.com" required>
+    </label>
+    <small class="error">* Utilice su mail corporativo (usuario@ravabursatil.com)</small>
+  </div>
+
+  <!-- Área -->
+  <div class="section">
+    <h3>Área</h3>
+    <label>Seleccione su área</label>
+    <select name="area" onchange="onAreaChange(this.value)" required>
+      <option value="">Seleccione...</option>
+      <option value="otros">Otros</option>
+      <option value="directorio">Directorio</option>
+      <option value="comercial">Comercial/Marketing</option>
+      <option value="mercado">Mercado</option>
+      <option value="tecnologia">Tecnología</option>
+      <option value="compliance">Compliance</option>
+      <option value="titulos">Títulos</option>
+      <option value="tesoreria">Tesorería</option>
+      <option value="comunicacion">Comunicación</option>
+    </select>
+  </div>
+  <div id="otherAreaSection" class="section hidden">
+    <label>Especifique otra área
+      <input type="text" name="otraArea">
+    </label>
+  </div>
+
+  <!-- Elementos recibidos (múltiples) -->
+  <div class="section">
+    <h3>Elementos recibidos</h3>
+    <div id="itemsContainer"></div>
+    <button type="button" onclick="addItemGroup()">Agregar otro elemento</button>
+  </div>
+
+  <!-- Aceptación de condiciones -->
+  <div class="section">
+    <h3>Declaración de recepción y uso</h3>
+    <p style="font-size: 0.9em;">Dejo constancia de la recepción de los elementos y herramientas de trabajo provistas por Rava Bursátil, las cuales son de propiedad exclusiva de la empresa. Confirmo que los elementos y herramientas de trabajo son de exclusivo uso para fines laborales, quedando prohibida su utilización con fines extralaborales como así también el uso incorrecto e inapropiado de los mismos.</p>
+    <label>
+      <input type="checkbox" id="confirmCheckbox" onchange="onConfirmToggle(this)"> Sí, confirmo
+    </label>
+  </div>
+
+  <!-- Botón de envío -->
+  <div class="section">
+    <button type="submit" id="submitBtn" disabled>Enviar</button>
+  </div>
+</form>
+
+<!-- Script para enviar los datos del formulario a Google Apps Script -->
+<script>
+// Reemplaza con la URL de tu implementación del Apps Script
+const WEB_APP_URL = 'https://script.google.com/macros/s/REEMPLAZA_AQUI/exec';
+
+// Serializa los datos del formulario incluyendo los elementos dinámicos
+function serializeForm() {
+  const form = document.getElementById('formRecepcion');
+  const data = {
+    nombre: form.nombre.value.trim(),
+    apellido: form.apellido.value.trim(),
+    email: form.email.value.trim(),
+    area: form.area.value,
+    otraArea: form.otraArea ? form.otraArea.value.trim() : '',
+    items: []
+  };
+  // Recorre todos los grupos de items
+  document.querySelectorAll('.item-group').forEach(group => {
+    const sel = group.querySelector('select[name^="elemento_"]');
+    if (!sel || !sel.value) return;
+    const idx = sel.name.split('_')[1];
+    const getField = (name) => {
+      const el = group.querySelector(`[name="${name}_${idx}"]`);
+      return el ? el.value.trim() : '';
+    };
+    data.items.push({
+      elemento: sel.value,
+      otroElemento: getField('otroElemento'),
+      marca: getField('marca'),
+      modelo: getField('modelo'),
+      numeroSerie: getField('numeroSerie'),
+      locacion: getField('locacion')
+    });
+  });
+  return data;
+}
+
+// Añade listener de envío al cargar la página
+(function attachSubmitHandler() {
+  const form = document.getElementById('formRecepcion');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    // Verifica si la casilla de confirmación está marcada
+    const confirm = document.getElementById('confirmCheckbox');
+    if (!confirm || !confirm.checked) {
+      alert('Debes confirmar la declaración para enviar.');
+      return;
+    }
+    // Validación de HTML5
+    if (!form.reportValidity()) {
+      return;
+    }
+    const payload = serializeForm();
+    // Validación adicional del dominio de email
+    if (!/@ravabursatil\.com$/i.test(payload.email)) {
+      alert('Utiliza tu email corporativo @ravabursatil.com');
+      return;
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    try {
+      const response = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const text = await response.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (err) {
+        json = { ok: response.ok, raw: text };
+      }
+      if (json.ok) {
+        alert('¡Enviado con éxito!');
+        // Reinicia los grupos de items y formulario
+        document.getElementById('itemsContainer').innerHTML = '';
+        window.itemIndex = 0;
+        addItemGroup();
+        form.reset();
+        onConfirmToggle(document.getElementById('confirmCheckbox'));
+      } else {
+        throw new Error(json.error || 'Error desconocido');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Hubo un problema al enviar: ' + err.message);
+    } finally {
+      // Reactiva el botón según el checkbox
+      btn.disabled = !document.getElementById('confirmCheckbox').checked;
+      btn.textContent = 'Enviar';
+    }
+  });
+})();
+</script>
+</body>
+</html>
