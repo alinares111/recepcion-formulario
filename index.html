@@ -130,9 +130,9 @@ window.onload = function() {
     </label>
     <label>Email corporativo
       <!-- patrón simple para requerir dominio corporativo ravabursatil.com -->
-      <input type="email" name="email" pattern="^[^@\s]+@ravabursatil\.com$" placeholder="usuario@ravabursatil.com" required>
+      <input type="email" name="email" pattern="^[^@\s]+@rava\.com$" placeholder="usuario@rava.com" required>
     </label>
-    <small class="error">* Utilice su mail corporativo (usuario@ravabursatil.com)</small>
+    <small class="error">* Utilice su mail corporativo (usuario@rava.com)</small>
   </div>
 
   <!-- Área -->
@@ -234,8 +234,8 @@ function serializeForm() {
     }
     const payload = serializeForm();
     // Validación adicional del dominio de email
-    if (!/@ravabursatil\.com$/i.test(payload.email)) {
-      alert('Utiliza tu email corporativo @ravabursatil.com');
+    if (!/@rava\.com$/i.test(payload.email)) {
+      alert('Utiliza tu email corporativo @rava.com');
       return;
     }
     const btn = document.getElementById('submitBtn');
